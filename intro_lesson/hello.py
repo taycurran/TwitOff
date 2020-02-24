@@ -19,4 +19,4 @@ def hello():
 
 # Now Make Function that Goes with About
 def preds():
-    return render_template('about.html')
+    return render_template("about.html")
