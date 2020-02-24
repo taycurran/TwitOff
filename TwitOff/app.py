@@ -1,12 +1,14 @@
+"""Code for our app"""
+
 from flask import Flask
 
+# Make our App Factory
+
 def create_app():
-    """Create and configure an instance of the Flask application"""
     app = Flask(__name__)
 
-    @app.route('/')
+    @app.route("/")
     def root():
-        return 'Hello TwitOff!'
-
+        return "Welcome to Twitoff!"
+    
     return app
-
