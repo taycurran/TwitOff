@@ -16,5 +16,4 @@ def create_app():
     @app.route("/")
     def root():
         return "Welcome to Twitoff!"
-    
     return app
