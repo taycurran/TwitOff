@@ -3,8 +3,10 @@
 from decouple import config
 from flask import Flask, render_template, request
 from .models import DB, User
-# Make our App Factory
 
+
+
+# Make our App Factory
 def create_app():
     app = Flask(__name__)
 
@@ -14,6 +16,8 @@ def create_app():
     # stop tracking modifications on sqlalchemy config
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+    # ? app.config["TWITTER_API_CLIENT"] = twitter
+
     # Have the database know about the app
     DB.init_app(app)
 
@@ -22,4 +26,11 @@ def create_app():
         users = User.query.all()
         return render_template('base.html', title='Home',
                                     users=users)
+    
+    @app.route('/reset')
+    def reset():
+        DB.drop_all()
+        DB.create_all()
+        return render_template('base.html', title='Reset', users=[])
+
     return app
