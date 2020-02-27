@@ -1,23 +1,21 @@
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 
-DB = SQLAlchemy()
+db = SQLAlchemy()
+migrate = Migrate()
 
-class User(DB.Model):
+class User(db.Model):
     """Twitter users that we analyze"""
-    id = DB.Column(DB.BigInteger, primary_key=True)
-    name = DB.Column(DB.String(15), nullable=False)
-    newest_tweet_id = DB.Column(DB.BigInteger)
-    def __repr__(self):
-        return '<User {}>'.format(self.name)
+    id = db.Column(db.BigInteger, primary_key=True)
+    screen_name = db.Column(db.String(128), nullable=False)
+    followers_count = db.Column(db.Integer)
+    latest_tweet_id = db.Column(db.BigInteger)
 
-class Tweet(DB.Model):
+class Tweet(db.Model):
     """Tweets we pull"""
-    id = DB.Column(DB.BigInteger, primary_key=True)
-    text = DB.Column(DB.Unicode(300))
-    user_id = DB.Column(DB.BigInteger, DB.ForeignKey('user.id'), nullable=False)
-    user = DB.relationship('User', backref=DB.backref('tweets', lazy=True))
+    id = db.Column(db.BigInteger, primary_key=True)
+    user_id = db.Column(db.BigInteger, db.ForeignKey('user.id'))
+    full_text = db.Column(db.Unicode(400))
+    embedding = db.Column(db.PickleType)
     
-    embedding = DB.Column(DB.PickleType, nullable=False)
-
-    def __repr__(self):
-        return '<User {}>'.format(self.text)
+    user = db.relationship("User", backref=db.backref("tweets", lazy=True))
