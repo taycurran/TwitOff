@@ -1,62 +1,51 @@
-"""Code for our app"""
+"""Code for our App"""
 
-from decouple import config
-from flask import Flask, render_template, request
-from flask import jsonify
+import os
+from dotenv import load_dotenv
+
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
-from .models import DB, User
+from TWITOFF.models import db, User, Tweet, migrate
+from TWITOFF.routes import routes
 
-from TWITOFF.routes.home_routes import home_routes
-from TWITOFF.routes.book_routes import book_routes
+load_dotenv()
 
-# Make our App Factory
+DATABASE_URL = os.getenv("DATABASE_URL", default="OOPS")
+
+# Make App Factory
 def create_app():
     app = Flask(__name__)
+    app.config["CUSTOM_VAR"] = 5
+    app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-    # configuring the database
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite///web_app_11.db"
-    
-    db = SQLAlchemy(app)
-    migrate = Migrate(app, db)
+    db.init_app(app)
+    migrate.init_app(app, db)
 
-    class Book(db.Model):
-        id = db.Column(db.Integer, primary_key=True)
-        title = db.Column(db.String(128))
-        author_id = db.Column(db.String(128))
-
-    # Registering Routes
-    app.register_blueprint(home_routes)
-    app.register_blueprint(book_routes)
+    app.register_blueprint(routes)
 
     return app
 
-    # # Add config for database
-    # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
 
-    # # stop tracking modifications on sqlalchemy config
-    # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-    # # ? app.config["TWITTER_API_CLIENT"] = twitter
 
-    # # Have the database know about the app
-    # DB.init_app(app)
 
-    # @app.route("/")
-    # def index():
-    #     users = User.query.all()
-    #     return render_template('base.html', title='Home',
-    #                                 users=users)
-    
-    # @app.route("/about")
-    # def about():
-    #     return "About Me"
 
-    # @app.route('/reset')
-    # def reset():
-    #     DB.drop_all()
-    #     DB.create_all()
-    #     return render_template('base.html', title='Reset', users=[])
 
-    # return app
+
+
+
+
+# --- Archived Imports ---
+# from decouple import config
+# from flask import Flask, render_template, request
+# from flask import jsonify
+# from flask_sqlalchemy import SQLAlchemy
+# from flask_migrate import Migrate
+
+# from .models import DB, User
+
+# from TWITOFF.routes.home_routes import home_routes
+# from TWITOFF.routes.book_routes import book_routes
