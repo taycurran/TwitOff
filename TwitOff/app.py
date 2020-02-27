@@ -1,51 +1,32 @@
-"""Code for our App"""
+# app.py
 
 import os
-from dotenv import load_dotenv
+from flask import Flask, jsonify, render_template, request
 
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
+from web_app.models import db, migrate
+from web_app.routes.home_routes import home_routes
+#from web_app.routes.book_routes import book_routes
+from web_app.routes.twitter_routes import twitter_routes
+from web_app.routes.admin_routes import admin_routes
+from web_app.routes.stats_routes import stats_routes
 
-from TWITOFF.models import db, User, Tweet, migrate
-from TWITOFF.routes import routes
+SECRET_KEY = os.getenv("SECRET_KEY", default="super secret")
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-load_dotenv()
-
-DATABASE_URL = os.getenv("DATABASE_URL", default="OOPS")
-
-# Make App Factory
 def create_app():
     app = Flask(__name__)
-    app.config["CUSTOM_VAR"] = 5
+
+    app.config["SECRET_KEY"] = SECRET_KEY # allows us to use flash messaging
     app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     db.init_app(app)
     migrate.init_app(app, db)
 
-    app.register_blueprint(routes)
+    app.register_blueprint(home_routes)
+    app.register_blueprint(book_routes)
+    app.register_blueprint(twitter_routes)
+    app.register_blueprint(admin_routes)
+    app.register_blueprint(stats_routes)
 
     return app
-
-
-
-
-
-
-
-
-
-
-
-# --- Archived Imports ---
-# from decouple import config
-# from flask import Flask, render_template, request
-# from flask import jsonify
-# from flask_sqlalchemy import SQLAlchemy
-# from flask_migrate import Migrate
-
-# from .models import DB, User
-
-# from TWITOFF.routes.home_routes import home_routes
-# from TWITOFF.routes.book_routes import book_routes
